@@ -1,0 +1,47 @@
+#!/bin/sh
+
+# rlwrap provides readline to stuff which doesn't know readline by itself
+RLWRAP=$(which rlwrap 2>/dev/null)
+READ_OPTIONS="-r"
+
+if [ "$RLWRAP" != "" ]
+then
+    if [ "$A_RERUN" = "" ]
+    then
+        A_RERUN="no" exec $RLWRAP $0
+    fi
+else
+    if [ "$BASH" ]
+    then
+        READ_PARAMETERS=" -e"
+    fi
+fi
+
+if [ $BASH ]
+then
+    READ_OPTIONS="$READ_OPTIONS -p awesome# "
+fi
+
+DBUS_SEND=dbus-send
+
+which ${DBUS_SEND} > /dev/null
+if test $? = 1
+then
+    echo "E: Unable to find" ${DBUS_SEND}
+    exit 1
+fi
+
+DBUS_PATH=/
+DBUS_DEST=org.naquadah.awesome.awful
+DBUS_METHOD=${DBUS_DEST}.Remote.Eval
+
+a_dbus_send()
+{
+    $DBUS_SEND --dest=$DBUS_DEST --type=method_call --print-reply $DBUS_PATH \
+        $DBUS_METHOD string:"$1" | tail -n +2
+}
+
+while read ${USE_READLINE} ${READ_OPTIONS} line
+do
+    a_dbus_send "$line"
+done
