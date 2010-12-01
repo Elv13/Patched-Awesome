@@ -108,9 +108,26 @@ screen_scan(void)
             if(!drop)
             {
                 screen_t s;
-                p_clear(&s, 1);
+                /*p_clear(&s, 1);
                 s.geometry = screen_xsitoarea(xsi[screen]);
-                screen_array_append(&globalconf.screens, s);
+                screen_array_append(&globalconf.screens, s);*/
+if (xsi[screen].width > 2000 ){ 
+s.geometry = screen_xsitoarea(xsi[screen]);
+s.geometry.width = 1280;
+s.geometry.height  = 1024;
+screen_array_append(&globalconf.screens, s);
+screen_t s2;
+p_clear(&s2, 1);
+s2.geometry = screen_xsitoarea(xsi[screen]);
+s2.geometry.width = 1024;
+s2.geometry.height  = 768;
+s2.geometry.x = s.geometry.x +1280;
+screen_array_append(&globalconf.screens, s2);
+}
+else {
+s.geometry = screen_xsitoarea(xsi[screen]);
+screen_array_append(&globalconf.screens, s);
+}
             }
         }
 
